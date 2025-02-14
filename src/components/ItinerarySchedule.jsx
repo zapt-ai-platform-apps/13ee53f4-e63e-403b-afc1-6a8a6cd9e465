@@ -1,41 +1,18 @@
 import React from 'react';
+import ItineraryDay from './ItineraryDay';
+import HotelList from './HotelList';
 
 export default function ItinerarySchedule({ itineraryDays, hotels, navigate }) {
   return (
-    <>
+    <div>
       <h2 className="text-2xl font-semibold mb-2">Day-by-Day Schedule</h2>
-      <ul className="mb-6 space-y-2">
+      <ul className="mb-6 space-y-4">
         {itineraryDays.map(day => (
-          <li key={day.day} className="flex items-center justify-between">
-            <span>{day.details}</span>
-            <button
-              onClick={() => {
-                console.log(`Navigating to map view for Day ${day.day}`);
-                navigate('/map', { state: { selectedDay: day.day } });
-              }}
-              className="bg-blue-500 text-white py-1 px-3 rounded cursor-pointer"
-            >
-              View Route
-            </button>
-          </li>
+          <ItineraryDay key={day.day} day={day} navigate={navigate} />
         ))}
       </ul>
       <h2 className="text-2xl font-semibold mb-2">Hotel Options</h2>
-      <ul className="mb-6 space-y-2">
-        {hotels.map((hotel, index) => (
-          <li key={index}>
-            <p><strong>{hotel.name}</strong> - {hotel.price}</p>
-            <a
-              href={hotel.bookingLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline cursor-pointer"
-            >
-              Book Now
-            </a>
-          </li>
-        ))}
-      </ul>
+      <HotelList hotels={hotels} />
       <div className="flex justify-between">
         <button
           onClick={() => navigate('/')}
@@ -50,6 +27,6 @@ export default function ItinerarySchedule({ itineraryDays, hotels, navigate }) {
           View Map
         </button>
       </div>
-    </>
+    </div>
   );
 }

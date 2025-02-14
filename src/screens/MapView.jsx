@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { useTravelPlan } from '../contexts/TravelPlanContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../utils/leafletConfig';
-import MapClickHandler from '../components/MapClickHandler';
 import { generateItinerary } from '../utils/itineraryUtils';
-import DayRouteSwitcher from '../components/DayRouteSwitcher';
-import ItineraryMap from '../components/ItineraryMap';
+import useAuth from '../hooks/useAuth';
+import MapViewContent from '../components/MapViewContent';
 
 export default function MapView() {
   const { travelPlan } = useTravelPlan();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const initialSelectedDay = location.state?.selectedDay || 1;
   const [selectedDay, setSelectedDay] = useState(initialSelectedDay);
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [mapType, setMapType] = useState('leaflet');
 
   if (!travelPlan) {
     return (
@@ -35,7 +36,7 @@ export default function MapView() {
 
   const handleShare = async () => {
     if (markerPosition) {
-      const shareUrl = `${window.location.origin}/map?day=${selectedDay}&marker=${markerPosition.lat.toFixed(4)},${markerPosition.lng.toFixed(4)}`;
+      const shareUrl = `${window.location.origin}/itinerary/${travelPlan.id}?day=${selectedDay}`;
       try {
         await navigator.clipboard.writeText(shareUrl);
         console.log('Share link copied:', shareUrl);
@@ -46,49 +47,25 @@ export default function MapView() {
     }
   };
 
+  const toggleMapType = () => {
+    setMapType(prev => (prev === 'leaflet' ? 'google' : 'leaflet'));
+    console.log('Map type toggled to', mapType === 'leaflet' ? 'google' : 'leaflet');
+  };
+
   return (
-    <div className="flex-grow p-4">
-      <h1 className="text-3xl font-bold mb-4">Map View</h1>
-      <p className="mb-4">
-        Click on the map to drop a pin for collaboration, or use the day switcher below to view detailed routes.
-      </p>
-      <DayRouteSwitcher
-        totalDays={totalDays}
-        selectedDay={selectedDay}
-        onSelectDay={(day) => {
-          console.log(`Day switched to ${day}`);
-          setSelectedDay(day);
-        }}
-      />
-      <ItineraryMap
-        markerPosition={markerPosition}
-        setMarkerPosition={setMarkerPosition}
-        currentDayInfo={currentDayInfo}
-      />
-      {currentDayInfo && (
-        <p className="mb-4">
-          Viewing route for Day {selectedDay}: {currentDayInfo.details}
-        </p>
-      )}
-      {markerPosition && (
-        <div className="mb-4">
-          <p>
-            Pin dropped at: {markerPosition.lat.toFixed(4)}, {markerPosition.lng.toFixed(4)}
-          </p>
-          <button
-            onClick={handleShare}
-            className="bg-green-500 text-white py-2 px-4 rounded cursor-pointer"
-          >
-            Share Collaboration Point
-          </button>
-        </div>
-      )}
-      <button
-        onClick={() => navigate('/itinerary')}
-        className="bg-gray-500 text-white py-2 px-4 rounded cursor-pointer"
-      >
-        Back to Itinerary
-      </button>
-    </div>
+    <MapViewContent
+      selectedDay={selectedDay}
+      setSelectedDay={setSelectedDay}
+      totalDays={totalDays}
+      currentDayInfo={currentDayInfo}
+      markerPosition={markerPosition}
+      setMarkerPosition={setMarkerPosition}
+      mapType={mapType}
+      toggleMapType={toggleMapType}
+      handleShare={handleShare}
+      user={user}
+      travelPlanId={travelPlan.id}
+      navigate={navigate}
+    />
   );
 }

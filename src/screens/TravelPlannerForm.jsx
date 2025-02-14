@@ -31,8 +31,10 @@ export default function TravelPlannerForm() {
   const onSubmit = async (data) => {
     setLoading(true);
     console.log("Form submission data:", data);
+    // Add a unique itinerary ID
+    const itineraryData = { ...data, id: Date.now().toString() };
     setTimeout(() => {
-      setTravelPlan(data);
+      setTravelPlan(itineraryData);
       setLoading(false);
       navigate('/itinerary');
     }, 1000);
