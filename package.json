@@ -22,7 +22,8 @@
     "@supabase/auth-ui-shared": "^0.1.8",
     "resend": "^4.0.1",
     "stream-chat": "^8.56.0",
-    "stream-chat-react": "^12.11.1"
+    "stream-chat-react": "^12.11.1",
+    "@zapt/zapt-js": "^1.0.20"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
